@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PollinationJail</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: radial-gradient(circle at top, #1f2a58 0%, #0d1022 55%, #090b18 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #e7eaff;
+            padding: 24px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 760px;
+            background: rgba(16, 20, 44, 0.85);
+            border: 1px solid rgba(141, 153, 255, 0.25);
+            border-radius: 18px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
+            padding: 34px;
+            backdrop-filter: blur(10px);
+        }
+
+        h1 {
+            font-size: 2.15rem;
+            margin-bottom: 8px;
+            letter-spacing: 0.3px;
+        }
+
+        p {
+            color: #b8c0ff;
+            margin-bottom: 20px;
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+
+        .query-form {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .input-box {
+            width: 100%;
+            min-height: 130px;
+            padding: 16px 18px;
+            font-size: 1rem;
+            line-height: 1.55;
+            border-radius: 14px;
+            border: 1px solid rgba(141, 153, 255, 0.5);
+            background: rgba(6, 10, 24, 0.7);
+            color: #f7f8ff;
+            resize: vertical;
+            outline: none;
+            transition: border-color 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        .input-box::placeholder {
+            color: #8d96d4;
+        }
+
+        .input-box:focus {
+            border-color: #97a0ff;
+            box-shadow: 0 0 0 4px rgba(118, 134, 255, 0.2);
+        }
+
+        .actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        button {
+            padding: 12px 24px;
+            font-size: 0.98rem;
+            border: 0;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            font-weight: 600;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #6e7cff 0%, #8866ff 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(110, 124, 255, 0.4);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: #b8c0ff;
+            border: 1px solid rgba(141, 153, 255, 0.45);
+        }
+
+        .result {
+            margin-top: 16px;
+            color: #e7eaff;
+            background: rgba(6, 10, 24, 0.55);
+            border: 1px solid rgba(141, 153, 255, 0.25);
+            border-radius: 12px;
+            padding: 14px;
+            white-space: pre;
+            overflow-x: auto;
+            tab-size: 4;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+            line-height: 1.45;
+            min-height: 52px;
+        }
+
+        .status {
+            color: #b8c0ff;
+            font-size: 0.92rem;
+            margin-top: 2px;
+        }
+
+        .recommended {
+            margin-top: 12px;
+            margin-bottom: 6px;
+        }
+
+        .recommended-label {
+            color: #b8c0ff;
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 12px;
+        }
+
+        .question-shortcuts {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .question-btn {
+            padding: 8px 14px;
+            font-size: 0.85rem;
+            background: rgba(110, 124, 255, 0.1);
+            color: #97a0ff;
+            border: 1px solid rgba(110, 124, 255, 0.3);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            font-weight: 500;
+        }
+
+        .question-btn:hover {
+            background: rgba(110, 124, 255, 0.25);
+            border-color: rgba(110, 124, 255, 0.6);
+            box-shadow: 0 4px 12px rgba(110, 124, 255, 0.15);
+        }
+
+        .ctf-section {
+            margin-top: 32px;
+            padding-top: 24px;
+            border-top: 1px solid rgba(141, 153, 255, 0.15);
+            text-align: center;
+        }
+
+        .ctf-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 32px;
+            font-size: 1.05rem;
+            background: linear-gradient(135deg, rgba(110, 124, 255, 0.15) 0%, rgba(136, 102, 255, 0.15) 100%);
+            color: #e7eaff;
+            border: 2px solid rgba(141, 153, 255, 0.5);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 700;
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .ctf-btn:hover {
+            background: linear-gradient(135deg, rgba(110, 124, 255, 0.25) 0%, rgba(136, 102, 255, 0.25) 100%);
+            border-color: rgba(141, 153, 255, 0.8);
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(110, 124, 255, 0.3);
+        }
+
+        .ctf-icon {
+            font-size: 1.2rem;
+        }
+    </style>
+    <script>
+        function formatOutput(value) {
+            return String(value ?? '')
+                .replace(/\r\n/g, '\n')
+                .replace(/\t/g, '    ')
+                .replace(/\u00a0/g, ' ');
+        }
+
+        async function fetchData() {
+            const input = document.getElementById('inputBox').value.trim();
+            const resultEl = document.getElementById('result');
+            const statusEl = document.getElementById('status');
+
+            if (!input) {
+                resultEl.innerText = 'Please enter a math question first.';
+                return;
+            }
+
+            statusEl.innerText = 'Solving...';
+            resultEl.innerText = '';
+
+            try {
+                const response = await fetch('/jail', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ prompt: input }),
+                });
+
+                const data = await response.json();
+                if (!response.ok) {
+                    resultEl.innerText = data.error || 'Request failed.';
+                    return;
+                }
+
+                resultEl.innerText = formatOutput(data.output);
+            } catch (err) {
+                resultEl.innerText = 'Could not connect to the server.';
+            } finally {
+                statusEl.innerText = '';
+            }
+        }
+
+        function clearForm() {
+            document.getElementById('inputBox').value = '';
+            document.getElementById('result').innerText = '';
+            document.getElementById('status').innerText = '';
+        }
+
+        function fillQuestion(question) {
+            document.getElementById('inputBox').value = question;
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1>PollinationJail</h1>
+        <p>Ask any math question and get a generated answer instantly.</p>
+
+        <div class="query-form">
+            <textarea id="inputBox" class="input-box" placeholder="Try: Integrate x^2*sin(x) from 0 to pi"></textarea>
+
+                
+            <div class="recommended">
+                <div class="question-shortcuts">
+                    <button class="question-btn" onclick="fillQuestion('Solve 2x^2 - 5x + 3 = 0')">Quadratic Equation</button>
+                    <button class="question-btn" onclick="fillQuestion('Integrate sin(x) from 0 to pi')">Integration</button>
+                    <button class="question-btn" onclick="fillQuestion('Solve the system: x + y = 5, 2x - y = 4')">Linear System</button>
+                    <button class="question-btn" onclick="fillQuestion('Expand (x + 2)^5')">Binomial Expansion</button>
+                    <button class="question-btn" onclick="fillQuestion('Find all critical points of f(x) = x^3 - 3x^2 + 2')">Critical Points</button>
+                </div>
+            </div>
+            <div class="actions">
+                <button class="btn-secondary" onclick="clearForm()">Clear</button>
+                <button class="btn-primary" onclick="fetchData()">Ask</button>
+            </div>
+
+        </div>
+
+        <div class="status" id="status"></div>
+        <div class="result" id="result"></div>
+
+        <div class="ctf-section">
+            <a href="/" class="ctf-btn">
+                <span class="ctf-icon">🚩</span>
+                <span>Submit Flags</span>
+            </a>
+        </div>
+    </div>
+</body>
+</html>

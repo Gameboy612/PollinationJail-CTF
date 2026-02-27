@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CTF - PollinationJail</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: radial-gradient(circle at top, #1f2a58 0%, #0d1022 55%, #090b18 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #e7eaff;
+            padding: 24px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 680px;
+            background: rgba(16, 20, 44, 0.85);
+            border: 1px solid rgba(141, 153, 255, 0.25);
+            border-radius: 18px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
+            padding: 34px;
+            backdrop-filter: blur(10px);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        h1 {
+            font-size: 2.15rem;
+            margin-bottom: 8px;
+            letter-spacing: 0.3px;
+        }
+
+        .subtitle {
+            color: #b8c0ff;
+            font-size: 1rem;
+        }
+
+        .progress-section {
+            margin-bottom: 28px;
+            padding: 20px;
+            background: rgba(6, 10, 24, 0.55);
+            border: 1px solid rgba(141, 153, 255, 0.25);
+            border-radius: 12px;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+        }
+
+        .progress-title {
+            font-size: 0.92rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #b8c0ff;
+        }
+
+        .progress-count {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #8866ff;
+        }
+
+        .flag-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .flag-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: rgba(16, 20, 44, 0.6);
+            border: 1px solid rgba(141, 153, 255, 0.2);
+            border-radius: 8px;
+            transition: all 0.25s ease;
+        }
+
+        .flag-item.solved {
+            border-color: rgba(134, 239, 172, 0.5);
+            background: rgba(34, 197, 94, 0.1);
+        }
+
+        .flag-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            flex-shrink: 0;
+        }
+
+        .flag-icon.pending {
+            background: rgba(141, 153, 255, 0.2);
+            border: 2px solid rgba(141, 153, 255, 0.4);
+            color: #8d96d4;
+        }
+
+        .flag-icon.solved {
+            background: rgba(34, 197, 94, 0.3);
+            border: 2px solid rgba(134, 239, 172, 0.6);
+            color: #86efac;
+        }
+
+        .flag-name {
+            flex: 1;
+            font-weight: 600;
+        }
+
+        .submit-section {
+            margin-top: 28px;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .flag-input {
+            flex: 1;
+            padding: 12px 16px;
+            font-size: 1rem;
+            border-radius: 10px;
+            border: 1px solid rgba(141, 153, 255, 0.5);
+            background: rgba(6, 10, 24, 0.7);
+            color: #f7f8ff;
+            outline: none;
+            transition: border-color 0.25s ease, box-shadow 0.25s ease;
+            font-family: ui-monospace, monospace;
+        }
+
+        .flag-input::placeholder {
+            color: #8d96d4;
+        }
+
+        .flag-input:focus {
+            border-color: #97a0ff;
+            box-shadow: 0 0 0 4px rgba(118, 134, 255, 0.2);
+        }
+
+        button {
+            padding: 12px 24px;
+            font-size: 0.98rem;
+            border: 0;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            font-weight: 600;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #6e7cff 0%, #8866ff 100%);
+            color: white;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(110, 124, 255, 0.4);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .message {
+            padding: 12px 16px;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            margin-top: 12px;
+            display: none;
+        }
+
+        .message.success {
+            background: rgba(34, 197, 94, 0.15);
+            border: 1px solid rgba(134, 239, 172, 0.4);
+            color: #86efac;
+            display: block;
+        }
+
+        .message.error {
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid rgba(248, 113, 113, 0.4);
+            color: #fca5a5;
+            display: block;
+        }
+
+        .nav-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: #97a0ff;
+            text-decoration: none;
+            font-size: 0.92rem;
+            transition: color 0.25s ease;
+        }
+
+        .nav-link:hover {
+            color: #b8c0ff;
+        }
+
+        .challenge-section {
+            margin-top: 32px;
+            padding-top: 24px;
+            border-top: 1px solid rgba(141, 153, 255, 0.15);
+            text-align: center;
+        }
+
+        .challenge-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 32px;
+            font-size: 1.05rem;
+            background: linear-gradient(135deg, rgba(110, 124, 255, 0.15) 0%, rgba(136, 102, 255, 0.15) 100%);
+            color: #e7eaff;
+            border: 2px solid rgba(141, 153, 255, 0.5);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 700;
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .challenge-btn:hover {
+            background: linear-gradient(135deg, rgba(110, 124, 255, 0.25) 0%, rgba(136, 102, 255, 0.25) 100%);
+            border-color: rgba(141, 153, 255, 0.8);
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(110, 124, 255, 0.3);
+        }
+
+        .challenge-icon {
+            font-size: 1.2rem;
+        }
+    </style>
+    <script>
+        let currentState = { solved: [], total: 2 };
+
+        async function loadStatus() {
+            try {
+                const response = await fetch('/ctf-status');
+                const data = await response.json();
+                currentState = data;
+                updateUI();
+            } catch (err) {
+                console.error('Failed to load status:', err);
+            }
+        }
+
+        function updateUI() {
+            // Update progress counter
+            document.getElementById('progressCount').textContent = 
+                `${currentState.solved.length}/${currentState.total}`;
+
+            // Update flag items
+            const flag1 = document.getElementById('flag1');
+            const flag2 = document.getElementById('flag2');
+
+            if (currentState.solved.includes('flag1')) {
+                flag1.classList.add('solved');
+                flag1.querySelector('.flag-icon').classList.remove('pending');
+                flag1.querySelector('.flag-icon').classList.add('solved');
+                flag1.querySelector('.flag-icon').textContent = '✓';
+            }
+
+            if (currentState.solved.includes('flag2')) {
+                flag2.classList.add('solved');
+                flag2.querySelector('.flag-icon').classList.remove('pending');
+                flag2.querySelector('.flag-icon').classList.add('solved');
+                flag2.querySelector('.flag-icon').textContent = '✓';
+            }
+        }
+
+        async function submitFlag() {
+            const input = document.getElementById('flagInput');
+            const flag = input.value.trim();
+            const messageEl = document.getElementById('message');
+            const submitBtn = document.getElementById('submitBtn');
+
+            if (!flag) {
+                showMessage('Please enter a flag', 'error');
+                return;
+            }
+
+            submitBtn.disabled = true;
+            messageEl.style.display = 'none';
+
+            try {
+                const response = await fetch('/submit-flag', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ flag }),
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showMessage(data.message, 'success');
+                    input.value = '';
+                    currentState = { solved: data.solved, total: data.total };
+                    updateUI();
+                } else {
+                    showMessage(data.message, 'error');
+                }
+            } catch (err) {
+                showMessage('Connection error. Please try again.', 'error');
+            } finally {
+                submitBtn.disabled = false;
+            }
+        }
+
+        function showMessage(text, type) {
+            const messageEl = document.getElementById('message');
+            messageEl.textContent = text;
+            messageEl.className = `message ${type}`;
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                submitFlag();
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', loadStatus);
+    </script>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚩 Capture The Flags</h1>
+            <p class="subtitle">Submit your discovered flags here</p>
+        </div>
+
+        <div class="progress-section">
+            <div class="progress-header">
+                <span class="progress-title">Progress</span>
+                <span class="progress-count" id="progressCount">0/2</span>
+            </div>
+            <div class="flag-list">
+                <div class="flag-item" id="flag1">
+                    <div class="flag-icon pending">1</div>
+                    <div class="flag-name">Flag 1 - Escape the Jail</div>
+                </div>
+                <div class="flag-item" id="flag2">
+                    <div class="flag-icon pending">2</div>
+                    <div class="flag-name">Flag 2 - Master the System</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="submit-section">
+            <div class="input-group">
+                <input 
+                    type="text" 
+                    id="flagInput" 
+                    class="flag-input" 
+                    placeholder="flag{...}" 
+                    onkeypress="handleKeyPress(event)"
+                    autocomplete="off"
+                />
+                <button class="btn-primary" id="submitBtn" onclick="submitFlag()">Submit</button>
+            </div>
+            <div id="message" class="message"></div>
+        </div>
+
+        <div class="challenge-section">
+            <a href="/chal" class="challenge-btn">
+                <span class="challenge-icon">🎯</span>
+                <span>Enter Challenge</span>
+            </a>
+        </div>
+    </div>
+</body>
+</html>
