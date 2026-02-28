@@ -45,7 +45,7 @@ def jail():
     print(result)
 
     if not result:
-        return "No code generated", 400
+        return jsonify({"error": "No code generated"}), 400
     result = result[0]
     local_vars = {"output": "", "key": ""}
     print(result)
@@ -74,7 +74,7 @@ def jail():
 
     print("Output:", output)
     if FLAG1 in str(output) or FLAG2 in str(output):
-        return jsonify({"error": "Oput"}), 403
+        return jsonify({"error": "Output contains illegal characters"}), 403
 
 
 
